@@ -7,10 +7,6 @@ require_once dirname(dirname(__FILE__)) . '/SudokuGrid.php';
 
 class SudokuGridTest extends PHPUnit_Framework_TestCase {
 	
-	 public function testConstructorCreatesSquare() {
-	 	$this->markTestIncomplete();
-	 }
-	 
 	 /**
      * @expectedException InvalidArgumentException
      */
@@ -20,7 +16,6 @@ class SudokuGridTest extends PHPUnit_Framework_TestCase {
     }
 
 	 public function testPopulateSmallGrid() {
-	 	$this->markTestSkipped();
 	 	$size = 4;
 	  	$sudoku = new SudokuGrid($size);
 	  	$grid = $sudoku->populate();
@@ -37,9 +32,8 @@ class SudokuGridTest extends PHPUnit_Framework_TestCase {
 	 	$sudoku = new SudokuGrid(9);
 	 	$this->assertEquals(array(0,0), $sudoku->getBoundingBox(0,0));
 	 	$this->assertEquals(array(6,6), $sudoku->getBoundingBox(8,6));
-	 	$this->assertEquals(array(0,0), $sudoku->getBoundingBox(0,0));
-	 	$this->assertEquals(array(0,0), $sudoku->getBoundingBox(0,0));
-	 	$this->assertEquals(array(0,0), $sudoku->getBoundingBox(0,0));
-
+	 	$this->assertEquals(array(3,6), $sudoku->getBoundingBox(4,8));
+	 	$this->assertEquals(array(3,0), $sudoku->getBoundingBox(5,2));
 	 }
+
 }
