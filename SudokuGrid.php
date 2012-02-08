@@ -17,35 +17,40 @@ class SudokuGrid {
 		for ($i = 0; $i < $this->size; $i++) {
 			$this->grid[$i] = array();
 			for ($j = 0; $j < $this->size; $j++) {
-				$this->grid[$i][$j] = join('', $this->chars);
+				$this->grid[$i][$j] = 0;//join('', $this->chars);
 			}
 		}
 		return $this;
 	}
 
 	public function populate($c = 0) {
-		//for ($c = 0; $c < $this->size * $this->size; $c++) {
-			$i = floor($c / $this->size);
+    $debug = false;
+		$stock = array(FALSE);
+		$grid = array();
+    $elements = pow($this->size, 2);
+		while ($c < $elements) {
+      for ($i=$c+1; $i < $elements; $i++) { 
+        $stock[$i] = FALSE;
+      }
+      $i = floor($c / $this->size);
 			$j = $c % $this->size;
-			$stock = $this->generate($i, $j);
-			if(empty($stock)) return false;
-			$this->grid[$i][$j] = array_pop($stock);
-			while(!$this->populate($c + 1)) {
-				if(empty($stock)) return false;
-				$this->grid[$i][$j] = array_pop($stock);
-			}
-//		}
-		if ($c > pow($this->size, 2)) {
-			$this->printGrid();
-			return $this->grid;
+			if ($stock[$c] === FALSE) $stock[$c] = $this->possible($i, $j);
+      if (empty($stock[$c])) {
+        $this->grid[$i][$j]  = 0;
+        $c--;
+        if ($c < 0) return false;
+        continue;
+      }
+      shuffle($stock[$c]);
+      $this->grid[$i][$j] = array_pop($stock[$c]);
+      
+      $c++;
 		}
-						
 	}
 
-	private function generate($i, $j) {
-		$forbidden = array_unique(array_merge($this->row($i), $this->col($j), $this->region($i, $j)));
-		$stock = @array_diff($this->chars, $forbidden);
-		@shuffle($stock);
+	private function possible($i, $j) {
+		$forbidden = array_unique(array_merge($this->row($i), $this->column($j), $this->region($i, $j)));
+		$stock = array_diff($this->chars, $forbidden);
 		return $stock;
 	}
 
@@ -53,7 +58,7 @@ class SudokuGrid {
 		return (array)$this->grid[$index];
 	}
 
-	public function col($index) {
+	public function column($index) {
 		$ret = array();
 		for ($i = 0; $i < $this->size; $i++) {
 			$ret[] = $this->grid[$i][$index];
@@ -89,7 +94,7 @@ class SudokuGrid {
 				if ($j % $this->base == 0) {
 					$string .= "| ";
 				}
-				$string .= $digit . " ";
+				$string .= ($digit == 0 ? ' ' : $digit) . " ";
 			}
 			$string .= "|\n";
 
