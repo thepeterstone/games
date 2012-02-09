@@ -139,11 +139,16 @@ class SudokuGrid {
     $this->grid[$i][$j] = $value;
   }
 
-  public function elide($level = .5) {
+  public function elide($level = 2) {
+    for ($pass = 0; $pass < $level; $pass++) {
     for ($i=0; $i < $this->count(); $i++) {
-      if (rand(0,100) < $level * 100) {
-        $this->set($i, 0);
+      $index = rand(1, $this->count()) - 1;
+      $temp = $this->get($index);
+      $this->set($index, NULL);
+      if (count($this->possible($index)) > 1) {
+        $this->set($index, $temp);
       }
     }
+  }
   }
 }
