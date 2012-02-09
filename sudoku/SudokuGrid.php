@@ -17,7 +17,7 @@ class SudokuGrid {
     for ($i = 0; $i < $this->size; $i++) {
       $this->grid[$i] = array();
       for ($j = 0; $j < $this->size; $j++) {
-        $this->grid[$i][$j] = 0;
+        $this->grid[$i][$j] = NULL;
       }
     }
     return $this;
@@ -94,7 +94,7 @@ class SudokuGrid {
         if ($j % $this->base == 0) {
           $string .= "| ";
         }
-        $string .= ($digit == 0 ? ' ' : $digit) . " ";
+        $string .= ($digit === NULL ? ' ' : $digit) . " ";
       }
       $string .= "|\n";
 
@@ -109,7 +109,7 @@ class SudokuGrid {
     $string = '';
     foreach ($this->grid as $line) {
       foreach($line as $digit) {
-        $string .= $digit;
+        $string .= ($digit === NULL ? ' ' : $digit);
       }
     }
     return $string;
