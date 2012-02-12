@@ -36,4 +36,15 @@ class SudokuGridTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(array(3,0), $sudoku->getBoundingBox(5,2));
 	}
 
+	public function testSerializeLengthIsPerfectSquare() {
+		$size = 9;
+		$sudoku = new SudokuGrid($size);
+		$this->assertEquals(pow($size, 2), strlen($sudoku->serialize()), "New grid should be correct length");
+		$sudoku->populate();
+		$this->assertEquals(pow($size, 2), strlen($sudoku->serialize()), "populate() shouldn't change length");
+		$sudoku->elide();
+		$this->assertEquals(pow($size, 2), strlen($sudoku->serialize()), "elide() shouldn't change length");
+
+	}
+
 }

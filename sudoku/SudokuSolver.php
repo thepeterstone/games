@@ -1,6 +1,6 @@
 <?php
 
-require 'SudokuGrid.php';
+require_once 'SudokuGrid.php';
 class SudokuSolver {
 	private $grid;
 
