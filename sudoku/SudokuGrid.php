@@ -94,7 +94,7 @@ class SudokuGrid {
 				if ($j % $this->base == 0) {
 					$string .= "| ";
 				}
-				$string .= ($digit == 0 ? ' ' : $digit) . " ";
+				$string .= $this->formatDigit($digit);
 			}
 			$string .= "|\n";
 
@@ -103,6 +103,10 @@ class SudokuGrid {
 		// don't warn if the buffer is empty
 		@ob_flush();
 		return $this;
+	}
+
+	private function formatDigit($digit) {
+		return ($digit == 0 ? ' ' : $digit) . " ";
 	}
 
 	public function serialize() {
