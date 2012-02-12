@@ -17,34 +17,34 @@ class SudokuGrid {
 		for ($i = 0; $i < $this->size; $i++) {
 			$this->grid[$i] = array();
 			for ($j = 0; $j < $this->size; $j++) {
-				$this->grid[$i][$j] = 0;
+				$this->grid[$i][$j] = NULL;
 			}
 		}
 		return $this;
 	}
 
 	public function populate() {
-    $c = 0;
+		$c = 0;
 		$stock = array(FALSE);
 		$grid = array();
-    $elements = pow($this->size, 2);
+		$elements = pow($this->size, 2);
 		while ($c < $elements) {
-      for ($i=$c+1; $i < $elements; $i++) { 
-        $stock[$i] = FALSE;
-      }
+			for ($i=$c+1; $i < $elements; $i++) {
+				$stock[$i] = FALSE;
+			}
 			if ($stock[$c] === FALSE) $stock[$c] = $this->possible($c);
-      if (empty($stock[$c])) {
-        $this->set($c, 0);
-        $c--;
-        if ($c < 0) return FALSE;
-        continue;
-      }
-      shuffle($stock[$c]);
-      $this->set($c,array_pop($stock[$c]));
-      
-      $c++;
+			if (empty($stock[$c])) {
+				$this->set($c, 0);
+				$c--;
+				if ($c < 0) return FALSE;
+				continue;
+			}
+			shuffle($stock[$c]);
+			$this->set($c,array_pop($stock[$c]));
+
+			$c++;
 		}
-    return $this->grid;
+		return $this->grid;
 	}
 
 	public function row($index) {
@@ -76,13 +76,13 @@ class SudokuGrid {
 		return array($i_box, $j_box);
 	}
 
-  public function possible($index) {
-    $i = floor($index / $this->size);
-    $j = $index % $this->size;
-    $forbidden = array_unique(array_merge($this->row($i), $this->column($j), $this->region($i, $j)));
-    $stock = array_diff($this->chars, $forbidden);
-    return $stock;
-  }
+	public function possible($index) {
+		$i = floor($index / $this->size);
+		$j = $index % $this->size;
+		$forbidden = array_unique(array_merge($this->row($i), $this->column($j), $this->region($i, $j)));
+		$stock = array_diff($this->chars, $forbidden);
+		return $stock;
+	}
 
 	public function printGrid() {
 		$string = "";
@@ -113,41 +113,46 @@ class SudokuGrid {
 		$string = '';
 		foreach ($this->grid as $line) {
 			foreach($line as $digit) {
-				$string .= $digit;
+				$string .= $this->formatDigit($digit);
 			}
 		}
 		return $string;
 	}
 
-  public function deserialize($string) {
-    $this->size = sqrt(strlen($string));
-    if ($this->size != floor($this->size)) {
-      throw new InvalidArgumentException("length of input must be a perfect square (".strlen($string).")");
-    }
-    $this->grid = array_chunk(str_split($string), $this->size);
-  }
+	public function deserialize($string) {
+		$this->size = sqrt(strlen($string));
+		if ($this->size != floor($this->size)) {
+			throw new InvalidArgumentException("length of input must be a perfect square (".strlen($string).")");
+		}
+		$this->grid = array_chunk(str_split($string), $this->size);
+	}
 
-  public function count() {
-    return pow($this->size,2);
-  }
+	public function count() {
+		return pow($this->size,2);
+	}
 
-  public function get($index) {
-    $i = floor($index / $this->size);
-    $j = $index % $this->size;
-    return $this->grid[$i][$j];
-  }
+	public function get($index) {
+		$i = floor($index / $this->size);
+		$j = $index % $this->size;
+		return $this->grid[$i][$j];
+	}
 
-  public function set($index, $value) {
-    $i = floor($index / $this->size);
-    $j = $index % $this->size;
-    $this->grid[$i][$j] = $value;
-  }
+	public function set($index, $value) {
+		$i = floor($index / $this->size);
+		$j = $index % $this->size;
+		$this->grid[$i][$j] = $value;
+	}
 
-  public function elide($level = .5) {
-    for ($i=0; $i < $this->count(); $i++) { 
-      if (rand(0,100) < $level * 100) {
-        $this->set($i, 0);
-      }
-    }
-  }
+	public function elide($level = 2) {
+		for ($pass = 0; $pass < $level; $pass++) {
+			for ($i=0; $i < $this->count(); $i++) {
+				$index = rand(1, $this->count()) - 1;
+				$temp = $this->get($index);
+				$this->set($index, NULL);
+				if (count($this->possible($index)) > 1) {
+					$this->set($index, $temp);
+				}
+			}
+		}
+	}
 }
