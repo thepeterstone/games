@@ -29,6 +29,14 @@ class BoardTest extends PHPUnit_Framework_TestCase {
 		$this->assertRegexp("/{$this->blank}{31}{$this->black}{$this->blank}{49}/", $this->board->serialize());
 	}
 
+	/**
+	 * @expectedException IllegalPlacementException
+	 */ 
+	public function testOverlapFails() {
+		$this->board->white(3, 3);
+		$this->board->black(3, 3);
+	}
+
 	public function testPrintBoardEmpty() {
 		ob_start();
 		$this->board->printBoard();
@@ -46,11 +54,11 @@ class BoardTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(0, substr_count($output, Board::BLACK));
 	}
 
-	/**
-	 * @expectedException IllegalPlacementException
-	 */ 
-	public function testOverlapFails() {
-		$this->board->white(3, 3);
-		$this->board->black(3, 3);
+	public function testScorekeeping() {
+		$this->assertEquals(array('black' => 0, 'white' => 0), $this->board->score);
+		$this->board->white(1);
+		$this->assertEquals(array('black' => 0, 'white' => 1), $this->board->score);
+		$this->board->black(2);
+		$this->assertEquals(array('black' => 1, 'white' => 1), $this->board->score);
 	}
 }
