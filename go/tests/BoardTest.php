@@ -28,4 +28,12 @@ class BoardTest extends PHPUnit_Framework_TestCase {
 		$b = Board::BLACK;
 		$this->assertRegexp("/\\$n{31}$b\\$n{49}/", $this->board->serialize());
 	}
+
+	/**
+	 * @expectedException IllegalPlacementException
+	 */ 
+	public function testOverlapFails() {
+		$this->board->white(3, 3);
+		$this->board->black(3, 3);
+	}
 }

@@ -45,11 +45,15 @@ class Board {
 	}
 
 	private function _move($color, $a, $b) {
-		return is_null($b) ? $this->_byOrdinal($color, $a) : $this->_byCoordinates($color, $a, $b);
+		$success = is_null($b) ? $this->_byOrdinal($color, $a) : $this->_byCoordinates($color, $a, $b);
 	}
 
 	private function _byOrdinal($color, $position) {
-		$this->values[$position - 1] = $color;
+		$zeroOffset = $position - 1;
+		if ($this->values[$zeroOffset] !== self::BLANK) {
+			throw new IllegalPlacementException("That square is not empty");
+		}
+		$this->values[$zeroOffset] = $color;
 		return true;
 	}
 
