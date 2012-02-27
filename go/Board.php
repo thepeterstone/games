@@ -7,6 +7,8 @@ class Board {
 
 	private $values = array();
 
+	public $score = array('white' => 0, 'black' => 0);
+
 	public function __construct() {
 		for ($i = 0; $i < 81; $i++) {
 			$this->values[$i] = self::BLANK; 
@@ -46,6 +48,7 @@ class Board {
 
 	private function _move($color, $a, $b) {
 		$success = is_null($b) ? $this->_byOrdinal($color, $a) : $this->_byCoordinates($color, $a, $b);
+		$this->_updateScore();
 	}
 
 	private function _byOrdinal($color, $position) {
@@ -62,6 +65,12 @@ class Board {
 		$position = (($x - 1) * $square) + $y;
 		return $this->_byOrdinal($color, $position);
 	}
+
+	private function _updateScore() {
+		$white = substr_count($this->serialize(), self::WHITE);
+		$black = substr_count($this->serialize(), self::BLACK);
+		$this->score = compact('white', 'black');
+	}	
 
 
 }
