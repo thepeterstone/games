@@ -9,23 +9,17 @@ class SudokuGridTest extends PHPUnit_Framework_TestCase {
 	
 	/**
 	* @expectedException InvalidArgumentException
-	*/
+	* /
 	public function testNonSquareSizeThrowsException() {
 		$sudoku = new SudokuGrid(3);
 		$this->fail("Non-square argument accepted");
 	}
+	//*/
 
-	public function testPopulateSmallGrid() {
-		$size = 4;
-		$sudoku = new SudokuGrid($size);
-		$grid = $sudoku->populate();
-		foreach($grid as $line_no => $line) {
-			$hist = array_count_values($line);
-			foreach ($hist as $entry => $count) {
-				$this->assertEquals(1, $count, "Line $line_no contains $count ${entry}s");
-			}
-			$this->assertEquals($size, count($line));
-		}
+	public function testInitialGridIsEmpty() {
+		$sudoku = new SudokuGrid('0123');
+		$sudoku->printGrid();
+		die('done');
 	}
 
 	public function testBoundingBox() {
@@ -34,17 +28,56 @@ class SudokuGridTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(array(6,6), $sudoku->getBoundingBox(8,6));
 		$this->assertEquals(array(3,6), $sudoku->getBoundingBox(4,8));
 		$this->assertEquals(array(3,0), $sudoku->getBoundingBox(5,2));
+		$sudoku = new SudokuGrid(4);
+		$this->assertEquals(array(0,0), $sudoku->getBoundingBox((float) 0, 0));
+		$this->assertEquals(array(0,2), $sudoku->getBoundingBox(0,3));
+		$this->assertEquals(array(2,2), $sudoku->getBoundingBox(3,3));
+		$this->assertEquals(array(0,2), $sudoku->getBoundingBox(1,3));
+	}
+
+	/**
+	* @expectedException InvalidArgumentException
+	*/
+	public function testBoundingBoxRejectsBadValues() {
+		$sudoku = new SudokuGrid(9);
+		$sudoku->getBoundingBox(9,0);
+		$sudoku->getBoundingBox(9,9);
+		$this->fail("Out-of-bounds input accepted");
+	}
+
+	public function testBoundingBoxIsInBounds() {
+		$base = 3;
+		$size = pow($base, 2);
+		$sudoku = new SudokuGrid($size);
+		list($v, $h) = $sudoku->getBoundingBox($base, $size - 1);
+		$ret = array();
+		for ($a = 0; $a < $base; $a++) {
+			for ($b = 0; $b < $base; $b++) {
+				$this->assertTrue($v + $a < $size);
+				$this->assertTrue($h + $b < $size);
+			}
+		}
+
 	}
 
 	public function testSerializeLengthIsPerfectSquare() {
 		$size = 9;
 		$sudoku = new SudokuGrid($size);
-		$this->assertEquals(pow($size, 2), strlen($sudoku->serialize()), "New grid should be correct length");
+		$sudoku->printGrid();die;
+		$this->assertEquals(pow($size, 2), strlen($sudoku->serialize()), $sudoku->serialize());//"New grid should be correct length");
 		$sudoku->populate();
 		$this->assertEquals(pow($size, 2), strlen($sudoku->serialize()), "populate() shouldn't change length");
 		$sudoku->elide();
 		$this->assertEquals(pow($size, 2), strlen($sudoku->serialize()), "elide() shouldn't change length");
 
+	}
+
+	public function testSerializeSetsSizeAndBase() {
+		$sudoku = new SudokuGrid();
+		$sudoku->deserialize('1');
+		$this->assertEquals(1, $sudoku->count());
+		$this->assertEquals(1, $sudoku->base());
+		$this->assertEquals(1, $sudoku->size());
 	}
 
 }
