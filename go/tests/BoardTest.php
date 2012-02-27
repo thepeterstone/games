@@ -29,6 +29,23 @@ class BoardTest extends PHPUnit_Framework_TestCase {
 		$this->assertRegexp("/{$this->blank}{31}{$this->black}{$this->blank}{49}/", $this->board->serialize());
 	}
 
+	public function testPrintBoardEmpty() {
+		ob_start();
+		$this->board->printBoard();
+		$output = ob_get_clean();
+		$this->assertEquals(0, substr_count($output, Board::WHITE));
+		$this->assertEquals(0, substr_count($output, Board::BLACK));
+	}
+
+	public function testPrintBoard() {
+		$this->board->white(1);
+		ob_start();
+		$this->board->printBoard();
+		$output = ob_get_clean();
+		$this->assertEquals(1, substr_count($output, Board::WHITE));
+		$this->assertEquals(0, substr_count($output, Board::BLACK));
+	}
+
 	/**
 	 * @expectedException IllegalPlacementException
 	 */ 
