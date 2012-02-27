@@ -16,10 +16,6 @@ class Board {
 		return $this;
 	}
 
-	public function __toString() {
-		return $this->serialize();
-	}
-
 	public function serialize() {
 		return join("", $this->values);
 	}
