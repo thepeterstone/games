@@ -72,5 +72,5 @@ class Board {
 }
 
 
-require_once '../Exceptions.php';
+require_once dirname(dirname(__FILE__)) . '/Exceptions.php';
 class IllegalPlacementException extends GameRulesException {}
