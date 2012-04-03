@@ -1,9 +1,0 @@
-{
-	"folders":
-	[
-		{
-			"path": "/Users/pstone/code/games",
-			"file_exclude_patterns": ["*.sublime-workspace", "*.sublime-project"]
-		}
-	]
-}
