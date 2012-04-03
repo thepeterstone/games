@@ -7,21 +7,6 @@ require_once dirname(dirname(__FILE__)) . '/SudokuGrid.php';
 
 class SudokuGridTest extends PHPUnit_Framework_TestCase {
 	
-	/**
-	* @expectedException InvalidArgumentException
-	* /
-	public function testNonSquareSizeThrowsException() {
-		$sudoku = new SudokuGrid(3);
-		$this->fail("Non-square argument accepted");
-	}
-	//*/
-
-	public function testInitialGridIsEmpty() {
-		$sudoku = new SudokuGrid('0123');
-		$sudoku->printGrid();
-		die('done');
-	}
-
 	public function testBoundingBox() {
 		$sudoku = new SudokuGrid(9);
 		$this->assertEquals(array(0,0), $sudoku->getBoundingBox(0,0));
@@ -41,8 +26,6 @@ class SudokuGridTest extends PHPUnit_Framework_TestCase {
 	public function testBoundingBoxRejectsBadValues() {
 		$sudoku = new SudokuGrid(9);
 		$sudoku->getBoundingBox(9,0);
-		$sudoku->getBoundingBox(9,9);
-		$this->fail("Out-of-bounds input accepted");
 	}
 
 	public function testBoundingBoxIsInBounds() {
@@ -63,7 +46,6 @@ class SudokuGridTest extends PHPUnit_Framework_TestCase {
 	public function testSerializeLengthIsPerfectSquare() {
 		$size = 9;
 		$sudoku = new SudokuGrid($size);
-		$sudoku->printGrid();die;
 		$this->assertEquals(pow($size, 2), strlen($sudoku->serialize()), $sudoku->serialize());//"New grid should be correct length");
 		$sudoku->populate();
 		$this->assertEquals(pow($size, 2), strlen($sudoku->serialize()), "populate() shouldn't change length");
@@ -72,7 +54,7 @@ class SudokuGridTest extends PHPUnit_Framework_TestCase {
 
 	}
 
-	public function testSerializeSetsSizeAndBase() {
+	public function testDeserializeSetsSizeAndBase() {
 		$sudoku = new SudokuGrid();
 		$sudoku->deserialize('1');
 		$this->assertEquals(1, $sudoku->count());
