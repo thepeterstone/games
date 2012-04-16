@@ -106,7 +106,12 @@ class SudokuGrid {
   }
 
   private function formatDigit($digit) {
-    return ($digit == 0 ? ' ' : $digit);
+    $digit = (int) $digit;
+    $digits = array( ' ', 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g' );
+    if (!isset($digits[$digit])) {
+      throw new InvalidArgumentException("'$digit' is not defined.");
+    }
+    return $digits[$digit];
   }
 
   public function serialize() {
