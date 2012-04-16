@@ -163,5 +163,6 @@ class SudokuGrid {
         }
       }
     }
+    return $this;
   }
 }
