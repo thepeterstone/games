@@ -166,3 +166,11 @@ class SudokuGrid {
     return $this;
   }
 }
+
+
+if (fileinode(__FILE__) === getmyinode()) {
+  $size = isset($argv[1]) ? $argv[1] : 9;
+  $g = new SudokuGrid($size);
+  $g->populate();
+  $g->elide()->printGrid();
+}
