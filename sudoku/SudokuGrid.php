@@ -71,6 +71,9 @@ class SudokuGrid {
   }
 
   public function getBoundingBox($i, $j) {
+    if ($i < 0 || $j < 0 || $i > $this->size || $j > $this->size) {
+      throw new InvalidArgumentException("Coordinates out of bounds: ($i, $j)");
+    }
     $i_box = $i - ($i % $this->base);
     $j_box = $j - ($j % $this->base);
     return array($i_box, $j_box);
