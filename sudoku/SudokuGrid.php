@@ -143,6 +143,10 @@ class SudokuGrid {
     return $this->base;
   }
 
+  public function size() {
+    return $this->size;
+  }
+
   public function get($index) {
     $i = floor($index / $this->size);
     $j = $index % $this->size;
