@@ -133,6 +133,10 @@ class SudokuGrid {
       throw new InvalidArgumentException("length of input must be a perfect square (".strlen($string).")");
     }
     $this->grid = array_chunk(str_split($string), $this->size);
+    $this->base = sqrt($this->size);
+    if ($this->base != floor($this->base)) {
+      throw new InvalidArgumentException("length of sides must be a perfect square (".$this->size.")");
+    }
   }
 
   public function count() {
