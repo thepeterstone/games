@@ -47,3 +47,11 @@ class SudokuSolver {
 		return $left;
 	}
 }
+
+
+
+if (fileinode(__FILE__) === getmyinode() && isset($argv[1])) {
+  $g = new SudokuSolver($argv[1]);
+  $g->solve();
+  $g->printGrid();
+}
