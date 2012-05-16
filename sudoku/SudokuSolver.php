@@ -33,7 +33,7 @@ class SudokuSolver {
 		$stock = array();
 
 		for ($i = 0; $i < $this->grid->count(); $i++) { 
-			if ((int) $this->grid->get($i) === 0) {
+			if ($this->grid->get($i) === NULL) {
 				$stock[$i] = $this->grid->possible($i);
 			} 
 		}

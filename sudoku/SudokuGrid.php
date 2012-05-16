@@ -12,7 +12,12 @@ class SudokuGrid {
       throw new InvalidArgumentException("gridSize must be a perfect square ($gridSize / {$this->base})");
     }
     $this->size = $gridSize;
-    $this->chars = range(1, $this->size);
+    # special case - hex version is zero-indexed
+    if ($gridSize == 16) {
+      $this->chars = range(0, 15);
+    } else {
+      $this->chars = range(1, $this->size);
+    }
 
     for ($i = 0; $i < $this->size; $i++) {
       $this->grid[$i] = array();
@@ -34,7 +39,7 @@ class SudokuGrid {
       }
       if ($stock[$c] === FALSE) $stock[$c] = $this->possible($c);
       if (empty($stock[$c])) {
-        $this->set($c, 0);
+        $this->set($c, NULL);
         $c--;
         if ($c < 0) return FALSE;
         continue;
@@ -109,8 +114,10 @@ class SudokuGrid {
   }
 
   private function formatDigit($digit) {
-    $digit = (int) $digit;
-    $digits = array( ' ', 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g' );
+    if ($digit === NULL) {
+      return ' ';
+    }
+    $digits = array( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f' );
     if (!isset($digits[$digit])) {
       throw new InvalidArgumentException("'$digit' is not defined.");
     }
