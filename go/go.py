@@ -4,7 +4,7 @@ pygame.init()
 size = width, height = 320, 240
 speed = [2, 2]
 black = 0, 0, 0
-white = 255,2555,255
+white = 255,255,255
 screen = pygame.display.set_mode(size)
 
 ball = pygame.image.load("ball.gif")
