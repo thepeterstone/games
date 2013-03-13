@@ -22,4 +22,4 @@ while 1:
 
 	screen.fill(white)
 	screen.blit(ball, ballrect)
-	pygame.display.flip()
+	pygame.display.update()
