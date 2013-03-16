@@ -89,7 +89,8 @@ class Board:
 	def valid_position(self, x, y, color):
 		if self.stones[x][y] != 0: return False
 		# the Rule of liberty - the stone, or its connected stones, must touch an empty space
-
+		neighbors = (self.stones[x-1][y], self.stones[x+1][y], self.stones[x][y-1],self.stones[x][y+1])
+		if 0 not in neighbors: return False
 		# 6. No stone may be played so as to recreate a former board position.
 		temp = list(self.stones); temp[x][y] = color
 		if str(temp) in self.history: return False
