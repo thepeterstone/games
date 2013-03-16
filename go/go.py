@@ -88,13 +88,25 @@ class Board:
 
 	def valid_position(self, x, y, color):
 		if self.stones[x][y] != 0: return False
-		# the Rule of liberty - the stone, or its connected stones, must touch an empty space
-		neighbors = (self.stones[x-1][y], self.stones[x+1][y], self.stones[x][y-1],self.stones[x][y+1])
-		if 0 not in neighbors: return False
+		if not self.liberty((x, y), color): return False
 		# 6. No stone may be played so as to recreate a former board position.
 		temp = list(self.stones); temp[x][y] = color
 		if str(temp) in self.history: return False
 		return True
+
+	def liberty(self, position, color):
+		# the Rule of liberty - the stone, or its connected stones, must touch an empty space
+		x,y = position
+		for candidate in [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]:
+			try:
+				a,b = candidate
+				if a < 0 or b < 0: continue # out of range
+				if self.stones[a][b] == 0: return True
+				if self.stones[a][b] == color and self.liberty(candidate, color): return True
+			except IndexError:
+				continue
+				
+		return False
 
 	def pass_turn(self):
 		# 7. Two consecutive passes end the game.
