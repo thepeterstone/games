@@ -1,8 +1,5 @@
 import sys, pygame, hashlib, collections
 
-# 3. A move consists of placing one stone of one's own color on an empty intersection on the board.
-# 4. A player may pass his turn at any time.
-# 5. A stone or solidly connected group of stones of one color is captured and removed from the board when all the intersections directly adjacent to it are occupied by the enemy. (Capture of the enemy takes precedence over self-capture.)
 # 8. A player's territory consists of all the points the player has either occupied or surrounded.
 # 9. The player with more territory wins.
 
@@ -77,17 +74,18 @@ class Board:
 
 
 	def init_stones(self, size):
-		return  [[0 for col in range(size)] for row in range(size)]
+		return [[0 for col in range(size)] for row in range(size)]
 
 	def place_piece(self, x, y):
-		if self.valid_position(x, y, self.next):
+		# 3. A move consists of placing one stone of one's own color on an empty intersection on the board.
+		if self.valid(x, y, self.next):
 			self.stones[x][y] = self.next
 			self.cull_captures(self.next)
 			self.next = 'white' if self.next=='black' else 'black'
 			self.history.append(str(self.stones))
 			self.last_move = self.MOVE
 
-	def valid_position(self, x, y, color):
+	def valid(self, x, y, color):
 		if self.stones[x][y] != 0: return False
 		if not self.liberty((x, y), color): return False
 		# 6. No stone may be played so as to recreate a former board position.
@@ -96,25 +94,40 @@ class Board:
 			return False
 		return True
 
+	def find_chain(self, position, chain = None):
+		if chain==None: chain=[]
+		if position not in chain: chain.append(position)
+		color = self.stone_at(position)
+		for candidate in self.neighbors(position):
+			if candidate not in chain and self.stone_at(candidate)==color:
+				for pos in self.find_chain(candidate, chain):
+					if pos not in chain: chain.append(pos)
+		return chain
+
+	def stone_at(self, position):
+		x,y = position
+		if x < 0 or y < 0 or x > len(self.stones) or y > len(self.stones): return
+		return self.stones[x][y]
+
+	def neighbors(self, position):
+		x,y = position
+		return [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]
+
 	def liberty(self, position, color):
 		# the Rule of liberty - the stone, or its connected stones, must touch an empty space
-		x,y = position
-		queue = collections.deque([(x-1,y),(x+1,y),(x,y-1),(x,y+1)])
-		processed = []
-		while len(queue) > 0:
-			candidate = queue.popleft()
-			try:
-				a,b = candidate
-				if a < 0 or b < 0: continue # out of range
-				if self.stones[a][b] == 0: return True
-				if self.stones[a][b] == color:
-					for pos in [(a-1,b),(a+1,b),(a,b-1),(a,b+1)]:
-						if pos not in processed:
-							queue.append(pos)
-			except IndexError:
-				continue
-			processed.append(candidate)
-				
+		connected = [position]
+		for pos in self.neighbors(position):
+			if self.stone_at(pos)==color: connected.append(pos)
+			if self.stone_at(pos)==0: return True
+
+		chains = []
+		for pos in connected:
+			chains.extend(self.find_chain(pos))
+
+		for candidate in chains:
+			for neighbor in self.neighbors(candidate):
+				if self.stone_at(neighbor)==0: return True
+			
 		return False
 
 	def cull_captures(self, color, multipass=True):
@@ -124,10 +137,8 @@ class Board:
 		for row in self.stones:
 			y = 0;
 			for position in row:
-				if self.stones[x][y] == current:
-					# todo - remove the entire chain
-					if  not self.liberty((x,y), self.stones[x][y]):
-						self.stones[x][y] = 0
+				if self.stones[x][y] == current and not self.liberty((x,y), self.stones[x][y]):
+					for pos in self.find_chain((x,y)): self.stones[pos[0]][pos[1]] = 0
 				y += 1
 			x += 1
 		if multipass:
@@ -137,6 +148,7 @@ class Board:
 	def pass_turn(self):
 		# 7. Two consecutive passes end the game.
 		if self.last_move == self.PASS: self.game_over()
+		# 4. A player may pass his turn at any time.
 		self.last_move = self.PASS
 
 	def game_over(self):
