@@ -1,4 +1,4 @@
-import sys, pygame, hashlib
+import sys, pygame, hashlib, collections
 
 # 3. A move consists of placing one stone of one's own color on an empty intersection on the board.
 # 4. A player may pass his turn at any time.
@@ -82,6 +82,7 @@ class Board:
 	def place_piece(self, x, y):
 		if self.valid_position(x, y, self.next):
 			self.stones[x][y] = self.next
+			self.cull_captures(self.next)
 			self.next = 'white' if self.next=='black' else 'black'
 			self.history.append(str(self.stones))
 			self.last_move = self.MOVE
@@ -91,22 +92,47 @@ class Board:
 		if not self.liberty((x, y), color): return False
 		# 6. No stone may be played so as to recreate a former board position.
 		temp = list(self.stones); temp[x][y] = color
-		if str(temp) in self.history: return False
+		if str(temp) in self.history: 
+			return False
 		return True
 
 	def liberty(self, position, color):
 		# the Rule of liberty - the stone, or its connected stones, must touch an empty space
 		x,y = position
-		for candidate in [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]:
+		queue = collections.deque([(x-1,y),(x+1,y),(x,y-1),(x,y+1)])
+		processed = []
+		while len(queue) > 0:
+			candidate = queue.popleft()
 			try:
 				a,b = candidate
 				if a < 0 or b < 0: continue # out of range
 				if self.stones[a][b] == 0: return True
-				if self.stones[a][b] == color and self.liberty(candidate, color): return True
+				if self.stones[a][b] == color:
+					for pos in [(a-1,b),(a+1,b),(a,b-1),(a,b+1)]:
+						if pos not in processed:
+							queue.append(pos)
 			except IndexError:
 				continue
+			processed.append(candidate)
 				
 		return False
+
+	def cull_captures(self, color, multipass=True):
+		# 5. A stone or solidly connected group of stones of one color is captured and removed from the board when all the intersections directly adjacent to it are occupied by the enemy. (Capture of the enemy takes precedence over self-capture.)
+		current = 'black' if color=='white' else 'white'
+		x = 0;
+		for row in self.stones:
+			y = 0;
+			for position in row:
+				if self.stones[x][y] == current:
+					# todo - remove the entire chain
+					if  not self.liberty((x,y), self.stones[x][y]):
+						self.stones[x][y] = 0
+				y += 1
+			x += 1
+		if multipass:
+			self.cull_captures(current, False)
+
 
 	def pass_turn(self):
 		# 7. Two consecutive passes end the game.
