@@ -18,7 +18,6 @@ class Go(object):
 		self.outro()
 
 	def intro(self):
-		return
 		self.screen.paint_intro()
 		while 1:
 			for event in pygame.event.get():
@@ -176,7 +175,26 @@ class View(object):
 		}
 
 	def paint_intro(self):
-		pass
+		self.surface.fill(self.bg_color)
+		font = pygame.font.Font(None, 72)
+		title = font.render("Go", 0, (62,62,62))
+		titlepos = title.get_rect()
+		titlepos.centerx = self.surface.get_rect().centerx
+		titlepos.y = 60
+		self.surface.blit(title, titlepos)
+
+		font = pygame.font.Font(None, 22)
+		prefix = font.render("Welcome to", 0, (62,62,62))
+		prefixpos = prefix.get_rect()
+		prefixpos.centerx = self.surface.get_rect().centerx
+		prefixpos.y = 20
+		self.surface.blit(prefix, prefixpos)
+		anykey = font.render("Hit any key to begin", 0, (255,255,255))
+		anykeypos = anykey.get_rect()
+		anykeypos.centerx = self.surface.get_rect().centerx
+		anykeypos.y = 120
+		self.surface.blit(anykey, anykeypos)
+
 
 	def paint_background(self, next):
 		x_offset, y_offset = self.offset
@@ -225,7 +243,7 @@ class View(object):
 
 
 
-
+			
 if __name__=='__main__':
 	pygame.init()
 	game = Go(19)
